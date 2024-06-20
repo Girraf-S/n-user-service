@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: n-user-service
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/n-user-service
+    username: postgres
+    password: mitrandir
+
+server:
+  port: 8081

@@ -7,4 +7,4 @@ values ('Anakin',
         'Skywalker',
         'choosenOne2000',
         'hsciapan@gmail.com',
-        0)
+        'ADMIN')
