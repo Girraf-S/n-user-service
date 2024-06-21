@@ -1,4 +1,4 @@
-package com.solbeg.nuserservice.entities;
+package com.solbeg.nuserservice.entity;
 
 public enum Role {
     ADMIN,
