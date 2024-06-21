@@ -14,6 +14,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 @EnableMethodSecurity
 @EnableWebSecurity
 public class SecurityConfiguration {
+
     @Bean
     public SecurityFilterChain applicationSecurity(HttpSecurity http) throws Exception {
         http

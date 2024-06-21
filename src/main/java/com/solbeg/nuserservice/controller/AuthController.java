@@ -15,7 +15,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public TokenResponse login(@RequestBody AuthParamsModel params){
+    public TokenResponse login(@RequestBody AuthParamsModel params) {
         return authService.login(params);
     }
 }

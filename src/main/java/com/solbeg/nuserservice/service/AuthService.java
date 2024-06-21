@@ -14,7 +14,7 @@ public class AuthService {
     @Value("${token.signing.key}")
     private String jwtSecret;
 
-    public TokenResponse login(AuthParamsModel params){
+    public TokenResponse login(AuthParamsModel params) {
         final String token = JWT.create()
                 .withClaim(User_.EMAIL, params.getEmail())
                 .sign(Algorithm.HMAC256(jwtSecret));
