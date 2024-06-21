@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: n-user-service
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/n-user-service
+    username: postgres
+    password: mitrandir
+token:
+  signing:
+    key: 9853970a-9e9f-4503-80f7-8376fcce1ba2
+server:
+  port: 8081
