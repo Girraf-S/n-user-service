@@ -4,6 +4,7 @@ import com.solbeg.nuserservice.service.UserDetailsServiceImpl;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
@@ -17,6 +18,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 @Configuration
 @EnableMethodSecurity
@@ -30,6 +32,8 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req -> req
                         .requestMatchers("/auth/login")
+                        .permitAll()
+                        .requestMatchers("/auth/registration")
                         .permitAll()
                         .anyRequest()
                         .authenticated())
@@ -62,4 +66,8 @@ public class SecurityConfiguration {
         return new BCryptPasswordEncoder(12);
     }
 
+    @Bean
+    public LocalValidatorFactoryBean validatorFactoryBean() {
+        return new LocalValidatorFactoryBean();
+    }
 }

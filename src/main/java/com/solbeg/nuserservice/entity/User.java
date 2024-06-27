@@ -1,10 +1,7 @@
 package com.solbeg.nuserservice.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @NoArgsConstructor
@@ -32,4 +29,9 @@ public class User {
     @Column(name = "role", nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @ToString.Include(name = "password")
+    public String maskString(){
+        return "********";
+    }
 }
