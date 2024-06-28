@@ -13,7 +13,8 @@ public enum Role {
             Permission.NEWS_WRITE,
             Permission.NEWS_READ,
             Permission.COMMENTS_WRITE,
-            Permission.COMMENTS_READ
+            Permission.COMMENTS_READ,
+            Permission.ACTIVATE_USERS
     )),
     JOURNALIST(Set.of(
             Permission.NEWS_WRITE,

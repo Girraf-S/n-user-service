@@ -13,6 +13,7 @@ public class UserDetailsImpl implements UserDetails {
     public UserDetailsImpl(User user) {
         this.user = user;
     }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return user.getRole().getAuthorities();
@@ -26,5 +27,25 @@ public class UserDetailsImpl implements UserDetails {
     @Override
     public String getUsername() {
         return user.getEmail();
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return user.isActive();
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return user.isActive();
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return user.isActive();
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return user.isActive();
     }
 }

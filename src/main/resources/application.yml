@@ -15,3 +15,6 @@ jwt:
   expiration: 3600000
 server:
   port: 8081
+security:
+  encoder:
+    strength: 12

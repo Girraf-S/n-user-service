@@ -1,6 +1,7 @@
 package com.solbeg.nuserservice.controller;
 
-import com.solbeg.nuserservice.model.AuthParamsModel;
+import com.solbeg.nuserservice.model.LoginModel;
+import com.solbeg.nuserservice.model.RegisterModel;
 import com.solbeg.nuserservice.model.TokenResponse;
 import com.solbeg.nuserservice.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,11 +23,27 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public TokenResponse login(@Valid @RequestBody AuthParamsModel params, BindingResult bindingResult) {
+    public TokenResponse login(@Valid @RequestBody LoginModel loginModel, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new IllegalArgumentException("Incorrect email or password format");
         } else
-            return authService.login(params);
+            return authService.login(loginModel);
+    }
+
+    @PostMapping("/registration/sub")
+    public TokenResponse subscriberRegistration(@Valid @RequestBody RegisterModel registerModel, BindingResult bindingResult) {
+        if(bindingResult.hasErrors()){
+            throw new IllegalArgumentException("Incorrect registration data");
+        }else
+            return authService.subscriberRegistration(registerModel);
+    }
+
+    @PostMapping("/registration/journ")
+    public TokenResponse journalistRegistration(@Valid @RequestBody RegisterModel registerModel, BindingResult bindingResult) {
+        if(bindingResult.hasErrors()){
+            throw new IllegalArgumentException("Incorrect registration data");
+        }else
+            return authService.journalistRegistration(registerModel);
     }
 
     @PostMapping("/logout")
