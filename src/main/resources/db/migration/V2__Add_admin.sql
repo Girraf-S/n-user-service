@@ -5,6 +5,6 @@ insert into users (first_name,
                    role)
 values ('Anakin',
         'Skywalker',
-        'choosenOne2000',
-        'hsciapan@gmail.com',
+        '$2a$12$8mO6qeZxtl7QaKj0YMWBoehrU4maMvEa9BvjVGetxRR3aU5PPxj3K',
+        'admin',
         'ADMIN')

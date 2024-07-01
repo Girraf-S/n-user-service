@@ -1,4 +1,4 @@
-package com.solbeg.nuserservice.controller;
+package com.solbeg.nuserservice.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

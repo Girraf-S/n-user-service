@@ -1,23 +1,36 @@
 package com.solbeg.nuserservice.service;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.solbeg.nuserservice.controller.TokenResponse;
-
-import com.solbeg.nuserservice.entity.User_;
+import com.solbeg.nuserservice.model.TokenResponse;
+import com.solbeg.nuserservice.entity.User;
 import com.solbeg.nuserservice.model.AuthParamsModel;
-import org.springframework.beans.factory.annotation.Value;
+import com.solbeg.nuserservice.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class AuthService {
-    @Value("${token.signing.key}")
-    private String jwtSecret;
+
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+
+    private User findUserByEmailOrThrowException(String email) {
+        return userRepository.findByEmail(email).orElseThrow(
+                () -> new RuntimeException("There is no user with this email: " + email));
+    }
+
+    private boolean isPasswordValid(AuthParamsModel paramsModel, User user) {
+        return passwordEncoder.matches(paramsModel.getPassword(), user.getPassword());
+    }
 
     public TokenResponse login(AuthParamsModel params) {
-        final String token = JWT.create()
-                .withClaim(User_.EMAIL, params.getEmail())
-                .sign(Algorithm.HMAC256(jwtSecret));
-        return new TokenResponse(token);
+        User user = findUserByEmailOrThrowException(params.getEmail());
+
+        if (!isPasswordValid(params, user)) {
+            throw new IllegalArgumentException("Incorrect password.");
+        }
+        return jwtService.createToken(user);
     }
 }

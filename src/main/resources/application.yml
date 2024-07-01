@@ -10,8 +10,8 @@ spring:
     url: jdbc:postgresql://localhost:5432/n-user-service
     username: postgres
     password: mitrandir
-token:
-  signing:
-    key: 9853970a-9e9f-4503-80f7-8376fcce1ba2
+jwt:
+  key: Nikon1234
+  expiration: 3600000
 server:
   port: 8081
