@@ -7,19 +7,17 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import java.util.Set;
 
 @Data
-public class UserModel {
+public class UserResponse {
     private String username;
-    private String password;
     private Set<SimpleGrantedAuthority> authorities;
     private boolean isActive;
 
-    public UserModel(String username, String password, Set<SimpleGrantedAuthority> authorities, boolean isActive) {
+    public UserResponse(String username, Set<SimpleGrantedAuthority> authorities, boolean isActive) {
         this.username = username;
-        this.password = password;
         this.authorities = authorities;
         this.isActive = isActive;
     }
 
-    public UserModel() {
+    public UserResponse() {
     }
 }

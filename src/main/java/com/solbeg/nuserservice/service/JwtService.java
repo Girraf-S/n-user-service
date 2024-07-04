@@ -5,7 +5,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.solbeg.nuserservice.entity.User;
-import com.solbeg.nuserservice.entity.User_;
+
 import com.solbeg.nuserservice.model.TokenResponse;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,7 +36,6 @@ public class JwtService {
 
         String token = JWT.create()
                 .withSubject(user.getEmail())
-                .withClaim(User_.ROLE, user.getRole().name())
                 .withIssuedAt(now)
                 .withExpiresAt(validity)
                 .sign(Algorithm.HMAC256(jwtSecret));
@@ -55,9 +54,6 @@ public class JwtService {
     public String extractUsername(String token) {
         DecodedJWT decodedJWT = decodeJWT(token);
         return decodedJWT.getSubject();
-    }
-    public String extractRole(String token){
-        return decodeJWT(token).getClaim(User_.ROLE).asString();
     }
     public boolean isTokenValid(String token, UserDetails userDetails){
         final String username = extractUsername(token);
