@@ -16,15 +16,16 @@ public class AdminController {
 
     private final UserRepository userRepository;
 
-    @PostMapping("/activate/jour")
-    @PreAuthorize("hasAuthority('activate:users')") //todo: or change to access by role
+    @PostMapping("/activate/journalist")
+    @PreAuthorize("hasAuthority('activate:users')")
     public Page<User> showNonActiveJournalists(){
         return new PageImpl<>(userRepository.findAllByIsActiveIsFalseAndRole(Role.JOURNALIST));
     }
 
-    @PreAuthorize("hasAuthority('activate:users')") //todo: or change to access by role
-    @PutMapping("/activate/jour/{id}")
+    @PreAuthorize("hasAuthority('activate:users')")
+    @PutMapping("/activate/journalist/{id}")
     public void activateJournalist(@PathVariable Long id){
         userRepository.activateUserById(id);
     }
+
 }

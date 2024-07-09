@@ -8,7 +8,6 @@ class NUserServiceApplicationTests {
 
     @Test
     void contextLoads() {
-
-    }
+   }
 
 }

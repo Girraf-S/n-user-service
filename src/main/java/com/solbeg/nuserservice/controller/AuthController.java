@@ -1,19 +1,18 @@
 package com.solbeg.nuserservice.controller;
 
-import com.solbeg.nuserservice.model.LoginModel;
-import com.solbeg.nuserservice.model.RegisterModel;
+import com.solbeg.nuserservice.mapper.UserMapper;
+import com.solbeg.nuserservice.model.LoginRequest;
+import com.solbeg.nuserservice.model.RegisterRequest;
 import com.solbeg.nuserservice.model.TokenResponse;
+import com.solbeg.nuserservice.model.UserResponse;
 import com.solbeg.nuserservice.service.AuthService;
+import com.solbeg.nuserservice.service.UserDetailsServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
@@ -21,29 +20,21 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthService authService;
+    private final UserMapper userMapper;
 
     @PostMapping("/login")
-    public TokenResponse login(@Valid @RequestBody LoginModel loginModel, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            throw new IllegalArgumentException("Incorrect email or password format");
-        } else
-            return authService.login(loginModel);
+    public TokenResponse login(@Valid @RequestBody LoginRequest loginRequest) {
+        return authService.login(loginRequest);
     }
 
-    @PostMapping("/registration/sub")
-    public TokenResponse subscriberRegistration(@Valid @RequestBody RegisterModel registerModel, BindingResult bindingResult) {
-        if(bindingResult.hasErrors()){
-            throw new IllegalArgumentException("Incorrect registration data");
-        }else
-            return authService.subscriberRegistration(registerModel);
+    @PostMapping("/registration/subscriber")
+    public TokenResponse subscriberRegistration(@Valid @RequestBody RegisterRequest registerRequest) {
+        return authService.subscriberRegistration(registerRequest);
     }
 
-    @PostMapping("/registration/journ")
-    public TokenResponse journalistRegistration(@Valid @RequestBody RegisterModel registerModel, BindingResult bindingResult) {
-        if(bindingResult.hasErrors()){
-            throw new IllegalArgumentException("Incorrect registration data");
-        }else
-            return authService.journalistRegistration(registerModel);
+    @PostMapping("/registration/journalist")
+    public TokenResponse journalistRegistration(@Valid @RequestBody RegisterRequest registerRequest) {
+            return authService.journalistRegistration(registerRequest);
     }
 
     @PostMapping("/logout")
@@ -52,4 +43,8 @@ public class AuthController {
         securityContextLogoutHandler.logout(request, response, null);
     }
 
+    @PostMapping("/users")
+    public UserResponse getUser(HttpServletRequest request) {
+        return userMapper.userToUserResponse(authService.getUser(request));
+    }
 }

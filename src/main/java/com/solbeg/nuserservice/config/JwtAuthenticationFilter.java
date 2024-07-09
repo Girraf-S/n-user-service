@@ -1,11 +1,13 @@
 package com.solbeg.nuserservice.config;
 
+import com.solbeg.nuserservice.exception.HeaderException;
 import com.solbeg.nuserservice.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpHeaders;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Objects;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -32,7 +35,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private void setAuthenticationIfTokenValid(HttpServletRequest request, String username, String jwt) {
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-        if(jwtService.isTokenValid(jwt, userDetails)){
+        if (jwtService.isTokenValid(jwt, userDetails)) {
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                     userDetails,
                     null,
@@ -51,19 +54,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
 
-        final String authHeader = request.getHeader("Authorization");
+        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         final String jwt;
         final String username;
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        if (authHeader == null) {
             filterChain.doFilter(request, response);
             return;
         }
+        if (!authHeader.startsWith("Bearer ")) {
+            throw new HeaderException("Header should be started with 'Bearer'");
+        }
+
         jwt = authHeader.substring(7);
         username = jwtService.extractUsername(jwt);
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            setAuthenticationIfTokenValid(request, username, jwt);
-        }
+        Objects.requireNonNull(username);
+        setAuthenticationIfTokenValid(request, username, jwt);
         filterChain.doFilter(request, response);
     }
 }
