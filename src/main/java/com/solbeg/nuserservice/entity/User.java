@@ -30,6 +30,9 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Column(name = "is_active", nullable = false)
+    private boolean isActive;
+
     @ToString.Include(name = "password")
     public String maskString(){
         return "********";
