@@ -7,6 +7,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -26,6 +27,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
 
     private final UserDetailsService userDetailsService;
+
+    @Value("${jwt.bearer}")
+    private String bearer;
+    @Value("${jwt.begin-index}")
+    private int beginIndex;
 
     public JwtAuthenticationFilter(JwtService jwtService,
                                    @Qualifier("UserDetailsServiceImpl") UserDetailsService userDetailsService) {
@@ -62,11 +68,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-        if (!authHeader.startsWith("Bearer ")) {
+        if (!authHeader.startsWith(bearer)) {
             throw new HeaderException("Header should be started with 'Bearer'");
         }
 
-        jwt = authHeader.substring(7);
+        jwt = authHeader.substring(beginIndex);
         username = jwtService.extractUsername(jwt);
         Objects.requireNonNull(username);
         setAuthenticationIfTokenValid(request, username, jwt);

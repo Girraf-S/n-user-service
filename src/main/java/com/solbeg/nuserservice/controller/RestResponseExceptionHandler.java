@@ -1,5 +1,6 @@
 package com.solbeg.nuserservice.controller;
 
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.solbeg.nuserservice.exception.HeaderException;
 import com.solbeg.nuserservice.model.Response;
 import org.aspectj.lang.annotation.AfterThrowing;
@@ -23,6 +24,13 @@ public class RestResponseExceptionHandler {
     @AfterThrowing(pointcut = "execution(* com.solbeg.nuserservice.controller.*.*(..))", throwing = "IllegalArgumentException")
     public ResponseEntity<Response> handleConflict(
             IllegalArgumentException ex) {
+        Response response = new Response(ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    @ExceptionHandler(TokenExpiredException.class)
+    @AfterThrowing(pointcut = "execution(* com.solbeg.nuserservice.controller.*.*(..))", throwing = "TokenExpiredException")
+    public ResponseEntity<Response> handleConflict(
+            TokenExpiredException ex) {
         Response response = new Response(ex.getMessage());
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }

@@ -9,6 +9,7 @@ import com.solbeg.nuserservice.entity.User;
 import com.solbeg.nuserservice.model.TokenResponse;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +37,8 @@ public class JwtService {
 
         String token = JWT.create()
                 .withSubject(user.getEmail())
+                .withClaim("id", user.getId())
+                .withClaim("authorities", user.getRole().getAuthorities().stream().map(SimpleGrantedAuthority::getAuthority).toList())
                 .withIssuedAt(now)
                 .withExpiresAt(validity)
                 .sign(Algorithm.HMAC256(jwtSecret));

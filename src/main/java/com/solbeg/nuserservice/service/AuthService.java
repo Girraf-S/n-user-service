@@ -10,6 +10,7 @@ import com.solbeg.nuserservice.model.LoginRequest;
 import com.solbeg.nuserservice.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,6 +24,12 @@ public class AuthService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final UserMapper userMapper;
+
+    @Value("${jwt.bearer}")
+    private String bearer;
+    @Value("${jwt.begin-index}")
+    private int beginIndex;
+
     private User findUserByEmailOrThrowException(String email) {
         return userRepository.findByEmail(email).orElseThrow(
                 () -> new RuntimeException("There is no user with this email: " + email));
@@ -68,8 +75,8 @@ public class AuthService {
     }
     public User getUser(HttpServletRequest request){
         String jwt = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if(jwt.startsWith("Bearer ")) throw new HeaderException("Header should be started with 'Bearer'");
-        return userRepository.findByEmail(jwtService.extractUsername(jwt.substring(7)))
+        if(!jwt.startsWith(bearer)) throw new HeaderException("Header should be started with 'Bearer'");
+        return userRepository.findByEmail(jwtService.extractUsername(jwt.substring(beginIndex)))
                 .orElseThrow(RuntimeException::new);
     }
 }
