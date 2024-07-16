@@ -32,6 +32,8 @@ public class JwtService {
     }
 
     public TokenResponse generateToken(User user) {
+        if(!user.isActive())
+            return new TokenResponse(null);
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliSeconds);
 

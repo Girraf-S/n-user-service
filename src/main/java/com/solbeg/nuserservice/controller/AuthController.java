@@ -1,12 +1,8 @@
 package com.solbeg.nuserservice.controller;
 
 import com.solbeg.nuserservice.mapper.UserMapper;
-import com.solbeg.nuserservice.model.LoginRequest;
-import com.solbeg.nuserservice.model.RegisterRequest;
-import com.solbeg.nuserservice.model.TokenResponse;
-import com.solbeg.nuserservice.model.UserResponse;
+import com.solbeg.nuserservice.model.*;
 import com.solbeg.nuserservice.service.AuthService;
-import com.solbeg.nuserservice.service.UserDetailsServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -28,12 +24,12 @@ public class AuthController {
     }
 
     @PostMapping("/registration/subscriber")
-    public TokenResponse subscriberRegistration(@Valid @RequestBody RegisterRequest registerRequest) {
+    public InfoResponse subscriberRegistration(@Valid @RequestBody RegisterRequest registerRequest) {
         return authService.subscriberRegistration(registerRequest);
     }
 
     @PostMapping("/registration/journalist")
-    public TokenResponse journalistRegistration(@Valid @RequestBody RegisterRequest registerRequest) {
+    public InfoResponse journalistRegistration(@Valid @RequestBody RegisterRequest registerRequest) {
             return authService.journalistRegistration(registerRequest);
     }
 
@@ -46,5 +42,9 @@ public class AuthController {
     @PostMapping("/users")
     public UserResponse getUser(HttpServletRequest request) {
         return userMapper.userToUserResponse(authService.getUser(request));
+    }
+    @GetMapping("/activate/subscriber/{code}")
+    public void activateSubscriber(@PathVariable String code){
+        authService.activateSubscriber(code);
     }
 }

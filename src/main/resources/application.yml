@@ -6,7 +6,19 @@ spring:
       ddl-auto: validate
     show-sql: false
     open-in-view: false
-
+  mail:
+    host: smtp.gmail.com
+    username: hirrafes@gmail.com
+    password: "Shem03+v"
+    port: 465
+    protocol: smtps
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
   datasource:
     url: jdbc:postgresql://localhost:5432/n-user-service
     username: postgres
@@ -18,6 +30,7 @@ jwt:
   begin-index: 7
 server:
   port: 8081
+  domain: http://localhost:8081/
 security:
   encoder:
     strength: 12

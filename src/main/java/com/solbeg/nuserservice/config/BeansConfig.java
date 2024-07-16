@@ -1,6 +1,5 @@
 package com.solbeg.nuserservice.config;
 
-import com.solbeg.nuserservice.mapper.UserMapper;
 import com.solbeg.nuserservice.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -41,8 +40,4 @@ public class BeansConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
     }
-//    @Bean
-//    public UserMapper userMapper(){
-//        return new UserMapperImpl();
-//    }
 }
