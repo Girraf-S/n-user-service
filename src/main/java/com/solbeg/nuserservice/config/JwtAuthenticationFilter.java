@@ -1,7 +1,9 @@
 package com.solbeg.nuserservice.config;
 
-import com.solbeg.nuserservice.exception.HeaderException;
+import com.solbeg.nuserservice.exception.AppException;
 import com.solbeg.nuserservice.service.JwtService;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,12 +11,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -41,14 +43,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private void setAuthenticationIfTokenValid(HttpServletRequest request, String username, String jwt) {
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        Claims claims = Jwts.claims().add(jwtService.extractClaims(jwt)).build();
         if (jwtService.isTokenValid(jwt, userDetails)) {
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                    userDetails,
+                    claims.getSubject(),
                     null,
                     userDetails.getAuthorities()
             );
             authToken.setDetails(
-                    new WebAuthenticationDetailsSource().buildDetails(request)
+                    claims//new WebAuthenticationDetailsSource().buildDetails(request)
             );
             SecurityContextHolder.getContext().setAuthentication(authToken);
         }
@@ -69,7 +72,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
         if (!authHeader.startsWith(bearer)) {
-            throw new HeaderException("Header should be started with 'Bearer'");
+            throw new AppException("Header should be started with 'Bearer'", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         jwt = authHeader.substring(beginIndex);

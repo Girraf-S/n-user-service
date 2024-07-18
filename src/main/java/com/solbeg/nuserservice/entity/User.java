@@ -33,6 +33,9 @@ public class User {
     @Column(name = "is_active", nullable = false)
     private boolean isActive;
 
+    @Column(name = "is_email_verified", nullable = false)
+    private boolean isEmailVerified;
+
     @ToString.Include(name = "password")
     public String maskString(){
         return "********";

@@ -1,22 +1,23 @@
 package com.solbeg.nuserservice.controller;
 
-import com.solbeg.nuserservice.mapper.UserMapper;
 import com.solbeg.nuserservice.model.*;
 import com.solbeg.nuserservice.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
 
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
-
     private final AuthService authService;
-    private final UserMapper userMapper;
 
     @PostMapping("/login")
     public TokenResponse login(@Valid @RequestBody LoginRequest loginRequest) {
@@ -24,27 +25,20 @@ public class AuthController {
     }
 
     @PostMapping("/registration/subscriber")
-    public InfoResponse subscriberRegistration(@Valid @RequestBody RegisterRequest registerRequest) {
-        return authService.subscriberRegistration(registerRequest);
+    public ResponseEntity<?> subscriberRegistration(@Valid @RequestBody RegisterRequest registerRequest) {
+        authService.subscriberRegistration(registerRequest);
+        return ResponseEntity.created(URI.create("/account")).build();
     }
 
     @PostMapping("/registration/journalist")
-    public InfoResponse journalistRegistration(@Valid @RequestBody RegisterRequest registerRequest) {
-            return authService.journalistRegistration(registerRequest);
+    @ResponseStatus(code = HttpStatus.CREATED)
+    public void journalistRegistration(@Valid @RequestBody RegisterRequest registerRequest) {
+            authService.journalistRegistration(registerRequest);
     }
 
     @PostMapping("/logout")
     public void logout(HttpServletRequest request, HttpServletResponse response) {
         SecurityContextLogoutHandler securityContextLogoutHandler = new SecurityContextLogoutHandler();
         securityContextLogoutHandler.logout(request, response, null);
-    }
-
-    @PostMapping("/users")
-    public UserResponse getUser(HttpServletRequest request) {
-        return userMapper.userToUserResponse(authService.getUser(request));
-    }
-    @GetMapping("/activate/subscriber/{code}")
-    public void activateSubscriber(@PathVariable String code){
-        authService.activateSubscriber(code);
     }
 }

@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table
 @Data
@@ -21,4 +23,6 @@ public class ActivationCode {
     private Long userId;
     @Column(nullable = false)
     private String code;
+    @Column(nullable = false)
+    private LocalDateTime expiredAt;
 }

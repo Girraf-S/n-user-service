@@ -30,13 +30,11 @@ public class MailSenderConfig {
         javaMailSender.setUsername(username);
         javaMailSender.setPassword(password);
 
-        Properties properties = javaMailSender.getJavaMailProperties();
-
-        properties.put("mail.transport.protocol", protocol);
-        properties.put("mail.smtp.host", host);
-        properties.put("mail.smtp.port", String.valueOf(port));
-        properties.put("mail.smtp.ssl.enable", "true");
-        properties.put("mail.smtp.auth", "true");
+        Properties props = javaMailSender.getJavaMailProperties();
+        props.put("mail.transport.protocol", protocol);
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.debug", "true");
 
         return javaMailSender;
     }
