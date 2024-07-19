@@ -23,7 +23,5 @@ public class AdminController {
     @PutMapping("/activate/{id}")
     public void activateUser(@PathVariable Long id){
         adminService.activateUserById(id);
-        // todo: move all the code to service, and throw exception if user not found(404)
-        // after user is activated, send email to user with link to the app login page "https://localhost:3000/login"
     }
 }
