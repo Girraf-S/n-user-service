@@ -9,12 +9,13 @@ import com.solbeg.nuserservice.entity.User;
 import com.solbeg.nuserservice.model.TokenResponse;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.util.Base64;
-import java.util.Date;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class JwtService {
@@ -31,18 +32,30 @@ public class JwtService {
     }
 
     public TokenResponse generateToken(User user) {
+        if(!user.isActive())
+            return new TokenResponse(null);
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliSeconds);
 
         String token = JWT.create()
                 .withSubject(user.getEmail())
+                .withClaim("id", user.getId())
+                .withClaim("authorities", user.getRole().getAuthorities().stream().map(SimpleGrantedAuthority::getAuthority).toList())
                 .withIssuedAt(now)
                 .withExpiresAt(validity)
                 .sign(Algorithm.HMAC256(jwtSecret));
-
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        SecurityContextHolder.getContext().setAuthentication(authentication);
         return new TokenResponse(token);
     }
-
+    public Map<String, Object> extractClaims(String jwt){
+        Map<String, Object> claims = new HashMap<>();
+        DecodedJWT decodedJWT = decodeJWT(jwt);
+        claims.put("id", decodedJWT.getClaim("id").asLong());
+        claims.put("username", decodedJWT.getSubject());
+        claims.put("authorities", decodedJWT.getClaim("authorities").asList(String.class));
+        return claims;
+    }
     public DecodedJWT decodeJWT(String token) {
         JWTVerifier verifier = JWT
                 .require(Algorithm.HMAC256(jwtSecret))

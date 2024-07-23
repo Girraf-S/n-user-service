@@ -1,23 +1,20 @@
 package com.solbeg.nuserservice.model;
 
-
+import com.solbeg.nuserservice.entity.Role;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import lombok.NoArgsConstructor;
 
-import java.util.Set;
-
+@AllArgsConstructor
+@NoArgsConstructor
 @Data
+@Builder
 public class UserResponse {
     private String username;
-    private Set<SimpleGrantedAuthority> authorities;
+    private String firstName;
+    private String lastName;
+    private Role role;
     private boolean isActive;
-
-    public UserResponse(String username, Set<SimpleGrantedAuthority> authorities, boolean isActive) {
-        this.username = username;
-        this.authorities = authorities;
-        this.isActive = isActive;
-    }
-
-    public UserResponse() {
-    }
+    private boolean isEmailVerified;
 }

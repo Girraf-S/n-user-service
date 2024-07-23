@@ -1,19 +1,22 @@
 package com.solbeg.nuserservice.config;
 
-import com.solbeg.nuserservice.exception.HeaderException;
+import com.solbeg.nuserservice.exception.AppException;
 import com.solbeg.nuserservice.service.JwtService;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -27,22 +30,28 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final UserDetailsService userDetailsService;
 
+    @Value("${jwt.bearer}")
+    private String bearer;
+    @Value("${jwt.begin-index}")
+    private int beginIndex;
+
     public JwtAuthenticationFilter(JwtService jwtService,
                                    @Qualifier("UserDetailsServiceImpl") UserDetailsService userDetailsService) {
         this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
     }
 
-    private void setAuthenticationIfTokenValid(HttpServletRequest request, String username, String jwt) {
+    private void setAuthenticationIfTokenValid(String username, String jwt) {
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        Claims claims = Jwts.claims().add(jwtService.extractClaims(jwt)).build();
         if (jwtService.isTokenValid(jwt, userDetails)) {
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                    userDetails,
+                    claims.getSubject(),
                     null,
                     userDetails.getAuthorities()
             );
             authToken.setDetails(
-                    new WebAuthenticationDetailsSource().buildDetails(request)
+                    claims
             );
             SecurityContextHolder.getContext().setAuthentication(authToken);
         }
@@ -62,14 +71,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-        if (!authHeader.startsWith("Bearer ")) {
-            throw new HeaderException("Header should be started with 'Bearer'");
+        if (!authHeader.startsWith(bearer)) {
+            throw new AppException("Header should be started with 'Bearer'", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        jwt = authHeader.substring(7);
+        jwt = authHeader.substring(beginIndex);
         username = jwtService.extractUsername(jwt);
         Objects.requireNonNull(username);
-        setAuthenticationIfTokenValid(request, username, jwt);
+        setAuthenticationIfTokenValid(username, jwt);
         filterChain.doFilter(request, response);
     }
 }

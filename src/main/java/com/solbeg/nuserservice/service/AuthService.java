@@ -1,19 +1,19 @@
 package com.solbeg.nuserservice.service;
 
 import com.solbeg.nuserservice.entity.Role;
-import com.solbeg.nuserservice.exception.HeaderException;
 import com.solbeg.nuserservice.mapper.UserMapper;
 import com.solbeg.nuserservice.model.RegisterRequest;
 import com.solbeg.nuserservice.model.TokenResponse;
 import com.solbeg.nuserservice.entity.User;
 import com.solbeg.nuserservice.model.LoginRequest;
 import com.solbeg.nuserservice.repository.UserRepository;
-import jakarta.servlet.http.HttpServletRequest;
+import com.solbeg.nuserservice.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,53 +23,49 @@ public class AuthService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final UserMapper userMapper;
-    private User findUserByEmailOrThrowException(String email) {
-        return userRepository.findByEmail(email).orElseThrow(
-                () -> new RuntimeException("There is no user with this email: " + email));
-    }
+    private final MailSenderService mailSenderService;
 
-    private User registerUser(RegisterRequest registerRequest, Role role, boolean isActive) {
-        checkRegisterData(registerRequest);
-        User user = userMapper.registerRequestToUser(registerRequest);
-        user.setActive(isActive);
-        user.setRole(role);
-        userRepository.save(user);
-        return user;
-    }
-
-    private void checkRegisterData(RegisterRequest registerRequest) {
-        if(userRepository.findByEmail(registerRequest.getEmail()).isPresent()){
-            throw new IllegalArgumentException("User with this email is exist");
-        }
-        if(!registerRequest.getPassword().equals(registerRequest.getRepeatPassword())){
-            throw new IllegalArgumentException("Password does not match");
-        }
-    }
-
+    @Transactional(readOnly = true)
     public TokenResponse login(LoginRequest loginRequest) {
-        authenticationManager.authenticate(
+        final Authentication authenticate = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.getEmail(),
                         loginRequest.getPassword()
                 )
         );
-        User user = findUserByEmailOrThrowException(loginRequest.getEmail());
-        return jwtService.generateToken(user);
+        UserDetailsImpl userDetails = (UserDetailsImpl) authenticate.getPrincipal();
 
-    }
-    public TokenResponse subscriberRegistration(RegisterRequest registerRequest) {
-        User user = registerUser(registerRequest, Role.SUBSCRIBER, true);
-        return jwtService.generateToken(user);
+        return jwtService.generateToken(userDetails.getUser());
     }
 
-    public TokenResponse journalistRegistration(RegisterRequest registerRequest) {
+    @Transactional
+    public void subscriberRegistration(RegisterRequest registerRequest) {
+        registerUser(registerRequest, Role.SUBSCRIBER, true);
+    }
+
+    @Transactional
+    public void journalistRegistration(RegisterRequest registerRequest) {
         User user = registerUser(registerRequest, Role.JOURNALIST, false);
-        return jwtService.generateToken(user);
+
+        mailSenderService.sendUserInfoToAdmin(user.getId(), user);
     }
-    public User getUser(HttpServletRequest request){
-        String jwt = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if(jwt.startsWith("Bearer ")) throw new HeaderException("Header should be started with 'Bearer'");
-        return userRepository.findByEmail(jwtService.extractUsername(jwt.substring(7)))
-                .orElseThrow(RuntimeException::new);
+
+    private User registerUser(RegisterRequest registerRequest, Role role, boolean active) {
+        checkRegisterData(registerRequest);
+
+        User user = userMapper.registerRequestToUser(registerRequest, role, active);
+
+        userRepository.save(user);
+
+        return user;
+    }
+
+    private void checkRegisterData(RegisterRequest registerRequest) {
+        if (userRepository.findByEmail(registerRequest.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("User with this email is exist");
+        }
+        if (!registerRequest.getPassword().equals(registerRequest.getRepeatPassword())) {
+            throw new IllegalArgumentException("Password does not match");
+        }
     }
 }

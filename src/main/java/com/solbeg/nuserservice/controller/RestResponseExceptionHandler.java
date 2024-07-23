@@ -1,29 +1,41 @@
 package com.solbeg.nuserservice.controller;
 
-import com.solbeg.nuserservice.exception.HeaderException;
-import com.solbeg.nuserservice.model.Response;
-import org.aspectj.lang.annotation.AfterThrowing;
+import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.solbeg.nuserservice.exception.AppException;
+import com.solbeg.nuserservice.model.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class RestResponseExceptionHandler {
 
-    @ExceptionHandler(HeaderException.class)
-    @AfterThrowing(pointcut = "execution(* com.solbeg.nuserservice.controller.*.*(..))", throwing = "HeaderException")
-    public ResponseEntity<Response> handleConflict(
-            HeaderException ex) {
-        Response response = new Response(ex.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    @ExceptionHandler(AppException.class)
+    public ResponseEntity<ErrorResponse> handleConflict(
+            AppException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage());
+        return new ResponseEntity<>(errorResponse, ex.getHttpStatus());
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    @AfterThrowing(pointcut = "execution(* com.solbeg.nuserservice.controller.*.*(..))", throwing = "IllegalArgumentException")
-    public ResponseEntity<Response> handleConflict(
+    public ResponseEntity<ErrorResponse> handleConflict(
             IllegalArgumentException ex) {
-        Response response = new Response(ex.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(TokenExpiredException.class)
+    public ResponseEntity<ErrorResponse> handleConflict(
+            TokenExpiredException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleConflict(
+            RuntimeException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

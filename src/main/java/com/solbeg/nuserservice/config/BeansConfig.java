@@ -1,11 +1,10 @@
 package com.solbeg.nuserservice.config;
 
-import com.solbeg.nuserservice.mapper.UserMapper;
-import com.solbeg.nuserservice.mapper.UserMapperImpl;
 import com.solbeg.nuserservice.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -15,6 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
+@EnableScheduling
 public class BeansConfig {
 
     @Value("${security.encoder.strength}")
@@ -41,9 +41,5 @@ public class BeansConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
-    }
-    @Bean
-    public UserMapper userMapper(){
-        return new UserMapperImpl();
     }
 }
