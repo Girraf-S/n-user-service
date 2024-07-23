@@ -1,7 +1,6 @@
 package com.solbeg.nuserservice.service;
 
 import com.solbeg.nuserservice.entity.Role;
-import com.solbeg.nuserservice.exception.AppException;
 import com.solbeg.nuserservice.mapper.UserMapper;
 import com.solbeg.nuserservice.model.RegisterRequest;
 import com.solbeg.nuserservice.model.TokenResponse;
@@ -10,7 +9,6 @@ import com.solbeg.nuserservice.model.LoginRequest;
 import com.solbeg.nuserservice.repository.UserRepository;
 import com.solbeg.nuserservice.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -36,9 +34,6 @@ public class AuthService {
                 )
         );
         UserDetailsImpl userDetails = (UserDetailsImpl) authenticate.getPrincipal();
-
-        if (!userDetails.getUser().isActive())
-            throw new AppException("User is not active", HttpStatus.LOCKED);
 
         return jwtService.generateToken(userDetails.getUser());
     }

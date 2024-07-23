@@ -41,7 +41,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         this.userDetailsService = userDetailsService;
     }
 
-    private void setAuthenticationIfTokenValid(HttpServletRequest request, String username, String jwt) {
+    private void setAuthenticationIfTokenValid(String username, String jwt) {
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
         Claims claims = Jwts.claims().add(jwtService.extractClaims(jwt)).build();
         if (jwtService.isTokenValid(jwt, userDetails)) {
@@ -51,7 +51,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     userDetails.getAuthorities()
             );
             authToken.setDetails(
-                    claims//new WebAuthenticationDetailsSource().buildDetails(request)
+                    claims
             );
             SecurityContextHolder.getContext().setAuthentication(authToken);
         }
@@ -78,7 +78,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         jwt = authHeader.substring(beginIndex);
         username = jwtService.extractUsername(jwt);
         Objects.requireNonNull(username);
-        setAuthenticationIfTokenValid(request, username, jwt);
+        setAuthenticationIfTokenValid(username, jwt);
         filterChain.doFilter(request, response);
     }
 }

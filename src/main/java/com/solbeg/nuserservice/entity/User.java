@@ -2,6 +2,7 @@ package com.solbeg.nuserservice.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLRestriction;
 
 @Data
 @NoArgsConstructor
@@ -9,6 +10,7 @@ import lombok.*;
 @Builder
 @Entity
 @Table(name = "users")
+@SQLRestriction("is_active = true")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,6 +23,7 @@ public class User {
     private String lastName;
 
     @Column(name = "password", nullable = false)
+    @ToString.Exclude
     private String password;
 
     @Column(name = "email", nullable = false, unique = true)
@@ -35,10 +38,4 @@ public class User {
 
     @Column(name = "is_email_verified", nullable = false)
     private boolean isEmailVerified;
-
-    @ToString.Include(name = "password")
-    public String maskString(){
-        return "********";
-    }
-
 }

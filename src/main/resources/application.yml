@@ -5,8 +5,8 @@ spring:
     properties:
       hibernate:
         show_sql: true
-        format_sql: true
-        generate_statistics: true
+        format_sql: false
+        generate_statistics: false
     hibernate:
       ddl-auto: validate
     open-in-view: true
