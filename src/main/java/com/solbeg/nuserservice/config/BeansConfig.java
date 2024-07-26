@@ -1,6 +1,8 @@
 package com.solbeg.nuserservice.config;
 
 import com.solbeg.nuserservice.service.UserDetailsServiceImpl;
+import com.solbeg.nuserservice.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,14 +17,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 @EnableScheduling
+@RequiredArgsConstructor
 public class BeansConfig {
 
     @Value("${security.encoder.strength}")
     private int strength;
-
+    private final UserService userService;
     @Bean
     public UserDetailsService userDetailsService() {
-        return new UserDetailsServiceImpl();
+        return new UserDetailsServiceImpl(userService);
     }
 
     @Bean

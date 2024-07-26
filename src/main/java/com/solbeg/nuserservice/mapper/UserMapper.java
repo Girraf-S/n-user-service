@@ -1,6 +1,5 @@
 package com.solbeg.nuserservice.mapper;
 
-import com.solbeg.nuserservice.annotations.CustomRule;
 import com.solbeg.nuserservice.entity.Role;
 import com.solbeg.nuserservice.entity.User;
 import com.solbeg.nuserservice.model.RegisterRequest;
@@ -8,15 +7,16 @@ import com.solbeg.nuserservice.model.UserResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring",uses = {PasswordEncoderMapper.class})
-public interface  UserMapper {
+@Mapper(componentModel = "spring", uses = {PasswordEncoderMapper.class})
+public interface UserMapper {
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "password", source = "registerRequest.password", qualifiedBy = CustomRule.class)
+    @Mapping(target = "password", source = "registerRequest.password", qualifiedByName = "encode")
     User registerRequestToUser(RegisterRequest registerRequest, Role role, boolean isActive);
 
     @Mapping(target = "username", source = "user.email")
     @Mapping(target = "isActive", source = "user.active")
     @Mapping(target = "isEmailVerified", source = "user.emailVerified")
+    @Mapping(target = "authorities", source = "user.role", qualifiedByName = "getAuthorities")
     UserResponse userToUserResponse(User user);
 }

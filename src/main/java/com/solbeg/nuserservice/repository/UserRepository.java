@@ -22,4 +22,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Modifying
     @Query("update User u set u.isActive=true where u.id=:id")
     void activateUserById(@Param("id")Long id);
+
+    @Query("select u from User u where u.id=:id and (u.isActive = false)")
+    Optional<User> findNonActiveById(Long id);
 }

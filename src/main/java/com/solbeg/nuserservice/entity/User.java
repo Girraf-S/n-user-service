@@ -2,7 +2,6 @@ package com.solbeg.nuserservice.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.SQLRestriction;
 
 @Data
 @NoArgsConstructor
@@ -10,7 +9,6 @@ import org.hibernate.annotations.SQLRestriction;
 @Builder
 @Entity
 @Table(name = "users")
-@SQLRestriction("is_active = true")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

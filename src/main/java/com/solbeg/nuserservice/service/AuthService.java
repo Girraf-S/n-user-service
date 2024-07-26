@@ -6,7 +6,6 @@ import com.solbeg.nuserservice.model.RegisterRequest;
 import com.solbeg.nuserservice.model.TokenResponse;
 import com.solbeg.nuserservice.entity.User;
 import com.solbeg.nuserservice.model.LoginRequest;
-import com.solbeg.nuserservice.repository.UserRepository;
 import com.solbeg.nuserservice.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final UserMapper userMapper;
@@ -55,13 +54,13 @@ public class AuthService {
 
         User user = userMapper.registerRequestToUser(registerRequest, role, active);
 
-        userRepository.save(user);
+        userService.save(user);
 
         return user;
     }
 
     private void checkRegisterData(RegisterRequest registerRequest) {
-        if (userRepository.findByEmail(registerRequest.getEmail()).isPresent()) {
+        if (userService.findByEmail(registerRequest.getEmail()).isPresent()) {
             throw new IllegalArgumentException("User with this email is exist");
         }
         if (!registerRequest.getPassword().equals(registerRequest.getRepeatPassword())) {

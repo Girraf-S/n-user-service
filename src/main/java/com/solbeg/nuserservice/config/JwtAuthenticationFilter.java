@@ -8,7 +8,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Qualifier;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.Objects;
 
 @Component
+@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
@@ -35,11 +36,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Value("${jwt.begin-index}")
     private int beginIndex;
 
-    public JwtAuthenticationFilter(JwtService jwtService,
-                                   @Qualifier("UserDetailsServiceImpl") UserDetailsService userDetailsService) {
-        this.jwtService = jwtService;
-        this.userDetailsService = userDetailsService;
-    }
+//    public JwtAuthenticationFilter(JwtService jwtService,
+//                                   @Qualifier("UserDetailsServiceImpl") UserDetailsService userDetailsService) {
+//        this.jwtService = jwtService;
+//        this.userDetailsService = userDetailsService;
+//    }
 
     private void setAuthenticationIfTokenValid(String username, String jwt) {
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);

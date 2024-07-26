@@ -15,12 +15,19 @@ public class RestResponseExceptionHandler {
     public ResponseEntity<ErrorResponse> handleConflict(
             AppException ex) {
         ErrorResponse errorResponse = new ErrorResponse(ex.getMessage());
+        System.out.println(ex.getMessage());
+        System.out.println(ex.getMessage());
+        System.out.println(ex.getMessage());
+        System.out.println(ex.getMessage());
         return new ResponseEntity<>(errorResponse, ex.getHttpStatus());
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleConflict(
             IllegalArgumentException ex) {
+        System.out.println(ex.getMessage());
+        System.out.println(ex.getMessage());
+        System.out.println(ex.getMessage());
         ErrorResponse errorResponse = new ErrorResponse(ex.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
@@ -29,6 +36,8 @@ public class RestResponseExceptionHandler {
     public ResponseEntity<ErrorResponse> handleConflict(
             TokenExpiredException ex) {
         ErrorResponse errorResponse = new ErrorResponse(ex.getMessage());
+        System.out.println(ex.getMessage());
+        System.out.println(ex.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS);
     }
 

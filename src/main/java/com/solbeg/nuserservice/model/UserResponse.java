@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Set;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -15,6 +17,7 @@ public class UserResponse {
     private String firstName;
     private String lastName;
     private Role role;
+    private Set<String> authorities;
     private boolean isActive;
     private boolean isEmailVerified;
 }
