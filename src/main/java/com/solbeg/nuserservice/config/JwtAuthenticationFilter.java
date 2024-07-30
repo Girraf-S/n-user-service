@@ -36,12 +36,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Value("${jwt.begin-index}")
     private int beginIndex;
 
-//    public JwtAuthenticationFilter(JwtService jwtService,
-//                                   @Qualifier("UserDetailsServiceImpl") UserDetailsService userDetailsService) {
-//        this.jwtService = jwtService;
-//        this.userDetailsService = userDetailsService;
-//    }
-
     private void setAuthenticationIfTokenValid(String username, String jwt) {
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
         Claims claims = Jwts.claims().add(jwtService.extractClaims(jwt))
