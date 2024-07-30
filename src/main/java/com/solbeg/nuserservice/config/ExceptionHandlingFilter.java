@@ -24,18 +24,8 @@ public class ExceptionHandlingFilter extends OncePerRequestFilter {
         try {
             filterChain.doFilter(request, response);
         } catch (AppException e) {
-            System.out.println(e.getMessage());
-            System.out.println(e.getMessage());
-            System.out.println(e.getMessage());
             sendError(response, e.getMessage(), e.getHttpStatus());
         } catch (Exception e) {
-
-            System.out.println(e.getMessage());
-            System.out.println(e.getMessage());
-            System.out.println(e.getMessage());
-            System.out.println(e.getMessage());
-            System.out.println(e.getMessage());
-            System.out.println(e.getMessage());
             sendError(response, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

@@ -49,7 +49,7 @@ public class AccountService {
                 .build();
         activationCodeRepository.save(activationCode);
 
-        mailSenderService.sendUserInfoToAdmin(activationCode.getCode(), user.getEmail());
+        mailSenderService.verifyEmail(activationCode.getCode(), user.getEmail());
     }
 
     @Transactional

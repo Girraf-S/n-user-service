@@ -46,7 +46,7 @@ public class AuthService {
     public void journalistRegistration(RegisterRequest registerRequest) {
         User user = registerUser(registerRequest, Role.JOURNALIST, false);
 
-        mailSenderService.sendUserInfoToAdmin(user.getId(), user);
+        mailSenderService.sendUserInfoToAdmin(user);
     }
 
     private User registerUser(RegisterRequest registerRequest, Role role, boolean active) {

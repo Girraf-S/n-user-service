@@ -2,6 +2,7 @@ package com.solbeg.nuserservice.service;
 
 import lombok.experimental.UtilityClass;
 import org.springframework.security.core.Authentication;
+
 import java.util.Map;
 
 @UtilityClass

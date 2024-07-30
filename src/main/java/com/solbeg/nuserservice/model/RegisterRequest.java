@@ -24,11 +24,11 @@ public class RegisterRequest {
     @Pattern(regexp = "(?=.*[a-z])(?=.*[A-Z])(?=.*[1-9]).*")
     private String repeatPassword;
     @NotNull
-    @Size(min = 4, max = 255)
+    @Size(min = 2, max = 255)
     @Pattern(regexp = "(^[A-Z][a-z]+$)|(^[А-Я][а-я]+$)")
     private String firstName;
     @NotNull
-    @Size(min = 4, max = 255)
+    @Size(min = 2, max = 255)
     @Pattern(regexp = "(^[A-Z][a-z]+$)|(^[А-Я][а-я]+$)")
     private String lastName;
 }

@@ -44,7 +44,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private void setAuthenticationIfTokenValid(String username, String jwt) {
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-        Claims claims = Jwts.claims().add(jwtService.extractClaims(jwt)).build();
+        Claims claims = Jwts.claims().add(jwtService.extractClaims(jwt))
+                .add("jwt", jwt)
+                .build();
         if (jwtService.isTokenValid(jwt, userDetails)) {
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                     claims.getSubject(),
