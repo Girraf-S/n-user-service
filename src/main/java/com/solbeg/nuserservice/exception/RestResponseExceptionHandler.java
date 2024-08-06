@@ -1,7 +1,6 @@
-package com.solbeg.nuserservice.controller;
+package com.solbeg.nuserservice.exception;
 
 import com.auth0.jwt.exceptions.TokenExpiredException;
-import com.solbeg.nuserservice.exception.AppException;
 import com.solbeg.nuserservice.model.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

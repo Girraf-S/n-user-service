@@ -6,7 +6,7 @@ import com.solbeg.nuserservice.exception.AppException;
 import com.solbeg.nuserservice.mapper.UserMapper;
 import com.solbeg.nuserservice.model.UserResponse;
 import com.solbeg.nuserservice.repository.ActivationCodeRepository;
-import com.solbeg.nuserservice.repository.UserRepository;
+import com.solbeg.nuserservice.util.AuthUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,7 +20,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AccountService {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final UserMapper userMapper;
     private final ActivationCodeRepository activationCodeRepository;
     private final MailSenderService mailSenderService;
@@ -28,7 +28,7 @@ public class AccountService {
     @Transactional(readOnly = true)
     public UserResponse getCurrentProfileInfo() {
         Long id = getIdFromSecurityContext();
-        User user = userRepository.findById(id).orElseThrow(
+        User user = userService.findById(id).orElseThrow(
                 () -> new AppException(HttpStatus.NOT_FOUND)
         );
         return userMapper.userToUserResponse(user);
@@ -37,7 +37,7 @@ public class AccountService {
     @Transactional
     public void sendActivationCode() {
         Long id = getIdFromSecurityContext();
-        User user = userRepository.findById(id).orElseThrow(
+        User user = userService.findById(id).orElseThrow(
                 () -> new AppException(HttpStatus.NOT_FOUND)
         );
 
@@ -50,7 +50,7 @@ public class AccountService {
                 .build();
         activationCodeRepository.save(activationCode);
 
-        mailSenderService.sendUserInfoToAdmin(activationCode.getCode(), user.getEmail());
+        mailSenderService.verifyEmail(activationCode.getCode(), user.getEmail());
     }
 
     @Transactional
@@ -58,14 +58,14 @@ public class AccountService {
         ActivationCode activationCode = activationCodeRepository.findByCode(code).orElseThrow(
                 () -> new AppException("Activation code don't exist or expired", HttpStatus.BAD_REQUEST)
         );
-        if(activationCode.getExpiredAt().isBefore(LocalDateTime.now()))
+        if (activationCode.getExpiredAt().isBefore(LocalDateTime.now()))
             throw new AppException("Activation code expired", HttpStatus.BAD_REQUEST);
 
-        User user = userRepository.findById(activationCode.getUserId()).orElseThrow(
-                ()->new AppException("User not found", HttpStatus.NOT_FOUND)
+        User user = userService.findById(activationCode.getUserId()).orElseThrow(
+                () -> new AppException("User not found", HttpStatus.NOT_FOUND)
         );
         user.setEmailVerified(true);
-        userRepository.save(user);
+        userService.save(user);
     }
 
     private Long getIdFromSecurityContext() {

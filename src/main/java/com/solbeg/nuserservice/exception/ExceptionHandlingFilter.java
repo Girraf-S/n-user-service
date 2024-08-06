@@ -1,10 +1,8 @@
-package com.solbeg.nuserservice.config;
+package com.solbeg.nuserservice.exception;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.solbeg.nuserservice.exception.AppException;
 import com.solbeg.nuserservice.model.ErrorResponse;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
@@ -21,7 +19,7 @@ public class ExceptionHandlingFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
+            throws IOException {
         try {
             filterChain.doFilter(request, response);
         } catch (AppException e) {

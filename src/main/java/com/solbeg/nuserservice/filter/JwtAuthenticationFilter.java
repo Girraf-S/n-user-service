@@ -1,4 +1,4 @@
-package com.solbeg.nuserservice.config;
+package com.solbeg.nuserservice.filter;
 
 import com.solbeg.nuserservice.exception.AppException;
 import com.solbeg.nuserservice.service.JwtService;
@@ -8,7 +8,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Qualifier;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.Objects;
 
 @Component
+@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
@@ -34,28 +35,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private String bearer;
     @Value("${jwt.begin-index}")
     private int beginIndex;
-
-    public JwtAuthenticationFilter(JwtService jwtService,
-                                   @Qualifier("UserDetailsServiceImpl") UserDetailsService userDetailsService) {
-        this.jwtService = jwtService;
-        this.userDetailsService = userDetailsService;
-    }
-
-    private void setAuthenticationIfTokenValid(String username, String jwt) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-        Claims claims = Jwts.claims().add(jwtService.extractClaims(jwt)).build();
-        if (jwtService.isTokenValid(jwt, userDetails)) {
-            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                    claims.getSubject(),
-                    null,
-                    userDetails.getAuthorities()
-            );
-            authToken.setDetails(
-                    claims
-            );
-            SecurityContextHolder.getContext().setAuthentication(authToken);
-        }
-    }
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
@@ -81,4 +60,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         setAuthenticationIfTokenValid(username, jwt);
         filterChain.doFilter(request, response);
     }
+
+    private void setAuthenticationIfTokenValid(String username, String jwt) {
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        Claims claims = Jwts.claims().add(jwtService.extractClaims(jwt))
+                .add("jwt", jwt)
+                .build();
+        if (jwtService.isTokenValid(jwt, userDetails)) {
+            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                    claims.getSubject(),
+                    null,
+                    userDetails.getAuthorities()
+            );
+            authToken.setDetails(
+                    claims
+            );
+            SecurityContextHolder.getContext().setAuthentication(authToken);
+        }
+    }
+
 }

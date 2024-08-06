@@ -2,59 +2,47 @@ package com.solbeg.nuserservice.service;
 
 import com.solbeg.nuserservice.entity.User;
 import com.solbeg.nuserservice.mapper.UserMapper;
-import com.solbeg.nuserservice.model.UserResponse;
+import com.solbeg.nuserservice.model.VerifyEmailRequest;
+import com.solbeg.nuserservice.util.AuthUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 @RequiredArgsConstructor
 public class MailSenderService {
-    private final JavaMailSender mailSender;
+    @Value("${service.mail-service}")
+    private String mailService;
+    @Value("${jwt.bearer}")
+    private String bearer;
+
+    private final RestTemplate restTemplate;
     private final UserMapper userMapper;
-    @Value("${server.domain}")
-    private String domain;
-    @Value("${spring.mail.username}")
-    private String username;
-    @Value("${spring.mail.admin-mail}")
-    private String adminMail;
 
-    public void sendUserInfoToAdmin(String code, String email) {
-        SimpleMailMessage mailMessage = new SimpleMailMessage();
-        String subject = "Activation code";
-        String message = "Hello! To verify your email visit link '"
-                + domain + "account/verify-mail/" + code +
-                "'";
-        mailMessage.setFrom(username);
-        mailMessage.setTo(email);
-        mailMessage.setSubject(subject);
-        mailMessage.setText(message);
+    public void verifyEmail(String code, String email) {
+        HttpHeaders headers = new HttpHeaders();
+        String jwt = AuthUtil.extractClaimStringValue(SecurityContextHolder.getContext().getAuthentication(), "jwt");
+        headers.set(HttpHeaders.AUTHORIZATION, bearer + jwt);
 
-        mailSender.send(mailMessage);
+        HttpEntity<VerifyEmailRequest> entity = new HttpEntity<>(
+                VerifyEmailRequest.builder()
+                        .email(email)
+                        .activationCode(code)
+                        .build(),
+                headers
+        );
+
+        restTemplate.exchange(mailService + "mail/verify", HttpMethod.POST,
+                entity, Void.class).getBody();
     }
 
-    public void sendUserInfoToAdmin(Long id, User user) {
-        SimpleMailMessage mailMessage = new SimpleMailMessage();
-        String subject = "Activate user with id";
-
-        UserResponse userResponse = userMapper.userToUserResponse(user);
-
-        String message = "User: " +
-                userResponse.toString() +
-                "\n" +
-                "Activate user: link '" +
-                domain +
-                "admin/activate/" +
-                id +
-                "'";
-
-        mailMessage.setFrom(user.getEmail());
-        mailMessage.setTo(adminMail);
-        mailMessage.setSubject(subject);
-        mailMessage.setText(message);
-
-        mailSender.send(mailMessage);
+    public void sendUserInfoToAdmin(User user) {
+        restTemplate.exchange(mailService + "mail/activate-link", HttpMethod.POST,
+                new HttpEntity<>(userMapper.userToUserResponse(user)), Void.class).getBody();
     }
 }

@@ -56,13 +56,6 @@ public class JwtService {
         claims.put("authorities", decodedJWT.getClaim("authorities").asList(String.class));
         return claims;
     }
-    public DecodedJWT decodeJWT(String token) {
-        JWTVerifier verifier = JWT
-                .require(Algorithm.HMAC256(jwtSecret))
-                .build();
-        return Optional.ofNullable(verifier.verify(token))
-                .orElseThrow(() -> new RuntimeException("Invalid token " + token));
-    }
 
     public String extractUsername(String token) {
         DecodedJWT decodedJWT = decodeJWT(token);
@@ -71,6 +64,14 @@ public class JwtService {
     public boolean isTokenValid(String token, UserDetails userDetails){
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+    }
+
+    private DecodedJWT decodeJWT(String token) {
+        JWTVerifier verifier = JWT
+                .require(Algorithm.HMAC256(jwtSecret))
+                .build();
+        return Optional.ofNullable(verifier.verify(token))
+                .orElseThrow(() -> new RuntimeException("Invalid token " + token));
     }
 
     private boolean isTokenExpired(String token) {

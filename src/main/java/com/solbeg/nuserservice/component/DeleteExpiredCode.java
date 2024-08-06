@@ -1,4 +1,4 @@
-package com.solbeg.nuserservice.service;
+package com.solbeg.nuserservice.component;
 
 import com.solbeg.nuserservice.repository.ActivationCodeRepository;
 import lombok.RequiredArgsConstructor;
