@@ -1,5 +1,6 @@
 package com.solbeg.nuserservice.service;
 
+import com.solbeg.nuserservice.repository.UserRepository;
 import com.solbeg.nuserservice.security.UserDetailsImpl;
 import com.solbeg.nuserservice.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -14,11 +15,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    private final UserService userService;
+    private final UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> user = userService.findByEmail(username);
+        Optional<User> user = userRepository.findByEmail(username);
         return user.map(UserDetailsImpl::new)
                 .orElseThrow(() -> new UsernameNotFoundException(username + " There is not such in REPO"));
     }

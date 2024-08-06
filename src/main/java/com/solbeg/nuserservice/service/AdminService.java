@@ -1,8 +1,7 @@
 package com.solbeg.nuserservice.service;
 
 import com.solbeg.nuserservice.exception.AppException;
-import com.solbeg.nuserservice.mapper.UserMapper;
-import com.solbeg.nuserservice.model.UserResponse;
+import com.solbeg.nuserservice.model.UserArchiveResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,14 +12,9 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AdminService {
     private final UserService userService;
-    private final UserMapper userMapper;
-    public Page<UserResponse> getAllUsers(Boolean isActive, Pageable pageable) {
-        if (isActive == null) {
-            return userService.findAll(pageable)
-                    .map(userMapper::userToUserResponse);
-        }
-        return userService.findAllByActive(isActive, pageable)
-                .map(userMapper::userToUserResponse);
+
+    public Page<UserArchiveResponse> getAllUsers(Boolean isActive, Pageable pageable) {
+        return userService.findAllByActive(isActive, pageable);
     }
 
     public void activateUserById(Long id) {

@@ -1,4 +1,4 @@
-package com.solbeg.nuserservice.config;
+package com.solbeg.nuserservice.filter;
 
 import com.solbeg.nuserservice.exception.AppException;
 import com.solbeg.nuserservice.service.JwtService;
@@ -36,24 +36,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Value("${jwt.begin-index}")
     private int beginIndex;
 
-    private void setAuthenticationIfTokenValid(String username, String jwt) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-        Claims claims = Jwts.claims().add(jwtService.extractClaims(jwt))
-                .add("jwt", jwt)
-                .build();
-        if (jwtService.isTokenValid(jwt, userDetails)) {
-            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                    claims.getSubject(),
-                    null,
-                    userDetails.getAuthorities()
-            );
-            authToken.setDetails(
-                    claims
-            );
-            SecurityContextHolder.getContext().setAuthentication(authToken);
-        }
-    }
-
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
@@ -78,4 +60,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         setAuthenticationIfTokenValid(username, jwt);
         filterChain.doFilter(request, response);
     }
+
+    private void setAuthenticationIfTokenValid(String username, String jwt) {
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        Claims claims = Jwts.claims().add(jwtService.extractClaims(jwt))
+                .add("jwt", jwt)
+                .build();
+        if (jwtService.isTokenValid(jwt, userDetails)) {
+            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                    claims.getSubject(),
+                    null,
+                    userDetails.getAuthorities()
+            );
+            authToken.setDetails(
+                    claims
+            );
+            SecurityContextHolder.getContext().setAuthentication(authToken);
+        }
+    }
+
 }

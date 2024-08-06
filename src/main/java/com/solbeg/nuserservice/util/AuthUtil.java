@@ -1,4 +1,4 @@
-package com.solbeg.nuserservice.service;
+package com.solbeg.nuserservice.util;
 
 import lombok.experimental.UtilityClass;
 import org.springframework.security.core.Authentication;

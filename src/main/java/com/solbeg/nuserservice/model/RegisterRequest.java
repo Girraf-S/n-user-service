@@ -4,13 +4,12 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class RegisterRequest {
     @NotNull
     @Email
@@ -18,10 +17,12 @@ public class RegisterRequest {
     @NotNull
     @Size(min = 4, max = 12)
     @Pattern(regexp = "(?=.*[a-z])(?=.*[A-Z])(?=.*[1-9]).*")
+    @EqualsAndHashCode.Exclude
     private String password;
     @NotNull
     @Size(min = 4, max = 12)
     @Pattern(regexp = "(?=.*[a-z])(?=.*[A-Z])(?=.*[1-9]).*")
+    @EqualsAndHashCode.Exclude
     private String repeatPassword;
     @NotNull
     @Size(min = 2, max = 255)

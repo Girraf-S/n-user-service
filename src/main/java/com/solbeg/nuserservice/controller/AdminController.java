@@ -1,6 +1,6 @@
 package com.solbeg.nuserservice.controller;
 
-import com.solbeg.nuserservice.model.UserResponse;
+import com.solbeg.nuserservice.model.UserArchiveResponse;
 import com.solbeg.nuserservice.service.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -15,7 +15,7 @@ public class AdminController {
     private final AdminService adminService;
     @GetMapping("/users")
     @PreAuthorize("hasAuthority('activate:users')")
-    public Page<UserResponse> getAllUsers(Pageable pageable, @RequestParam(required = false) Boolean isActive){
+    public Page<UserArchiveResponse> getAllUsers(Pageable pageable, @RequestParam(required = false) Boolean isActive){
         return adminService.getAllUsers(isActive, pageable);
     }
 

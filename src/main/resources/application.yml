@@ -9,7 +9,7 @@ spring:
         generate_statistics: false
     hibernate:
       ddl-auto: validate
-    open-in-view: true
+    open-in-view: false
   datasource:
     url: jdbc:postgresql://localhost:5432/n-user-service
     username: postgres

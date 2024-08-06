@@ -1,7 +1,6 @@
-package com.solbeg.nuserservice.config;
+package com.solbeg.nuserservice.exception;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.solbeg.nuserservice.exception.AppException;
 import com.solbeg.nuserservice.model.ErrorResponse;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;

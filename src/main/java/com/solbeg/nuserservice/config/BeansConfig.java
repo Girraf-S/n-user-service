@@ -1,7 +1,7 @@
 package com.solbeg.nuserservice.config;
 
+import com.solbeg.nuserservice.repository.UserRepository;
 import com.solbeg.nuserservice.service.UserDetailsServiceImpl;
-import com.solbeg.nuserservice.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -23,10 +23,10 @@ public class BeansConfig {
 
     @Value("${security.encoder.strength}")
     private int strength;
-    private final UserService userService;
+    private final UserRepository userRepository;
     @Bean
     public UserDetailsService userDetailsService() {
-        return new UserDetailsServiceImpl(userService);
+        return new UserDetailsServiceImpl(userRepository);
     }
 
     @Bean

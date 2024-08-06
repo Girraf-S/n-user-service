@@ -2,7 +2,9 @@ package com.solbeg.nuserservice.mapper;
 
 import com.solbeg.nuserservice.entity.Role;
 import com.solbeg.nuserservice.entity.User;
+import com.solbeg.nuserservice.entity.UserArchive;
 import com.solbeg.nuserservice.model.RegisterRequest;
+import com.solbeg.nuserservice.model.UserArchiveResponse;
 import com.solbeg.nuserservice.model.UserResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -19,4 +21,12 @@ public interface UserMapper {
     @Mapping(target = "isEmailVerified", source = "user.emailVerified")
     @Mapping(target = "authorities", source = "user.role", qualifiedByName = "getAuthorities")
     UserResponse userToUserResponse(User user);
+
+
+    @Mapping(target = "isActive", source = "user.active")
+    UserArchiveResponse userToUserArchiveResponse(User user);
+
+
+    @Mapping(target = "isActive", source = "userArchive.active")
+    UserArchiveResponse userArchiveToUserArchiveResponse(UserArchive userArchive);
 }

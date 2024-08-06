@@ -6,6 +6,7 @@ import com.solbeg.nuserservice.exception.AppException;
 import com.solbeg.nuserservice.mapper.UserMapper;
 import com.solbeg.nuserservice.model.UserResponse;
 import com.solbeg.nuserservice.repository.ActivationCodeRepository;
+import com.solbeg.nuserservice.util.AuthUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -57,11 +58,11 @@ public class AccountService {
         ActivationCode activationCode = activationCodeRepository.findByCode(code).orElseThrow(
                 () -> new AppException("Activation code don't exist or expired", HttpStatus.BAD_REQUEST)
         );
-        if(activationCode.getExpiredAt().isBefore(LocalDateTime.now()))
+        if (activationCode.getExpiredAt().isBefore(LocalDateTime.now()))
             throw new AppException("Activation code expired", HttpStatus.BAD_REQUEST);
 
         User user = userService.findById(activationCode.getUserId()).orElseThrow(
-                ()->new AppException("User not found", HttpStatus.NOT_FOUND)
+                () -> new AppException("User not found", HttpStatus.NOT_FOUND)
         );
         user.setEmailVerified(true);
         userService.save(user);

@@ -3,6 +3,7 @@ package com.solbeg.nuserservice.service;
 import com.solbeg.nuserservice.entity.User;
 import com.solbeg.nuserservice.mapper.UserMapper;
 import com.solbeg.nuserservice.model.VerifyEmailRequest;
+import com.solbeg.nuserservice.util.AuthUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
